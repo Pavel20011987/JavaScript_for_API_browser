@@ -1,50 +1,30 @@
-var images = ["image1.jpg", "image2.jpg", "image3.jpg"]; // Массив с путями к изображениям
-var currentImageIndex = 0; // Индекс текущего изображения
+// Get the necessary elements
+const image = document.getElementById('image');
+const author = document.getElementById('author');
+const likeButton = document.getElementById('like-button');
+const likeCounter = document.getElementById('like-counter');
 
-var sliderImage = document.getElementById("sliderImage");
-var prevButton = document.getElementById("prevButton");
-var nextButton = document.getElementById("nextButton");
-var dots = document.getElementsByClassName("dot");
-
-// Функция для обновления отображаемого изображения
-function updateSlider() {
-    sliderImage.src = images[currentImageIndex];
-
-    // Установка активного класса для соответствующей точки
-    for (var i = 0; i < dots.length; i++) {
-        if (i === currentImageIndex) {
-            dots[i].classList.add("active");
-        } else {
-            dots[i].classList.remove("active");
-        }
-    }
+// Function to get a random image from Unsplash
+async function getRandomImage() {
+  const response = await fetch('https://api.unsplash.com/photos/random?client_id=v6gE_trJi7WzypaubCP_QOsP7kcJC_sHjD3hCd3kRUY');
+  const data = await response.json();
+  return data;
 }
 
-// Обработчик клика на кнопку "Предыдущее изображение"
-prevButton.addEventListener("click", function() {
-    currentImageIndex--;
-    if (currentImageIndex < 0) {
-        currentImageIndex = images.length - 1;
-    }
-    updateSlider();
-});
-
-// Обработчик клика на кнопку "Следующее изображение"
-nextButton.addEventListener("click", function() {
-    currentImageIndex++;
-    if (currentImageIndex >= images.length) {
-        currentImageIndex = 0;
-    }
-    updateSlider();
-});
-
-// Обработчик клика на точку
-for (var i = 0; i < dots.length; i++) {
-    dots[i].addEventListener("click", function() {
-        currentImageIndex = Array.prototype.indexOf.call(dots, this);
-        updateSlider();
-    });
+// Function to display the image and author information
+async function displayImage() {
+  const imageData = await getRandomImage();
+  image.src = imageData.urls.regular;
+  author.textContent = imageData.user.name;
 }
 
-// Инициализация слайдера
-updateSlider();
+// Function to handle like button click
+function handleLikeClick() {
+  likeCounter.textContent = parseInt(likeCounter.textContent) + 1;
+}
+
+// Event listener for page load
+window.addEventListener('load', displayImage);
+
+// Event listener for like button click
+likeButton.addEventListener('click', handleLikeClick);
